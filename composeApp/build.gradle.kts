@@ -37,6 +37,9 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+
+            // Optional dependencies
+            implementation(libs.koin.android)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -49,8 +52,17 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
 
             implementation(project(":logging"))
+            implementation(project(":roomdatabase"))
+
+            // Optional dependencies
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
         }
         commonTest.dependencies {
+            implementation(libs.kotlin.test)
+
+            // Optional dependencies
             implementation(libs.kotlin.test)
         }
         desktopMain.dependencies {

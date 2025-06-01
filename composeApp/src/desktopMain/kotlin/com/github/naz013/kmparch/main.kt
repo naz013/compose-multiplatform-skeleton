@@ -8,6 +8,9 @@ fun main() = application {
         onCloseRequest = ::exitApplication,
         title = "Compose Multiplatform Skeleton",
     ) {
+        initKoin {
+            printLogger()
+        }
         App()
     }
 }
