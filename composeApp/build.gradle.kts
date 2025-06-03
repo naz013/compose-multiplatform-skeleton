@@ -53,6 +53,7 @@ kotlin {
 
             implementation(project(":logging"))
             implementation(project(":roomdatabase"))
+            implementation(project(":datastore"))
 
             // Optional dependencies
             implementation(project.dependencies.platform(libs.koin.bom))
@@ -63,11 +64,11 @@ kotlin {
             implementation(libs.kotlin.test)
 
             // Optional dependencies
-            implementation(libs.kotlin.test)
+            implementation(libs.koin.test)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
-            implementation(libs.kotlinx.coroutinesSwing)
+            implementation(libs.kotlinx.coroutines.swing)
         }
     }
 }

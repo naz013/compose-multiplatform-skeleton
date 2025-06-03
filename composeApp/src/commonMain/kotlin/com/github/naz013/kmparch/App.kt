@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.naz013.datastore.example.ExampleSettings
 import com.github.naz013.logging.Logger
 import com.github.naz013.roomdatabase.example.Example
 import com.github.naz013.roomdatabase.example.ExampleRepository
@@ -33,10 +34,10 @@ import kotlin.uuid.Uuid
 @Composable
 @Preview
 fun App(
-    exampleRepository: ExampleRepository = getKoin().get()
+    exampleRepository: ExampleRepository = getKoin().get(),
+    exampleSettings: ExampleSettings = getKoin().get()
 ) {
     MaterialTheme {
-        var showContent by remember { mutableStateOf(false) }
         Column(
             modifier = Modifier
                 .safeContentPadding()
@@ -112,6 +113,12 @@ fun App(
             Spacer(modifier = Modifier.height(8.dp))
             var firstEntity by remember { mutableStateOf("null") }
             var lastEntity by remember { mutableStateOf("null") }
+
+            runBlocking {
+                firstEntity = exampleRepository.getFirst()?.name ?: "null"
+                lastEntity = exampleRepository.getLast()?.name ?: "null"
+            }
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -154,6 +161,37 @@ fun App(
                 ) {
                     Text(
                         text = "Read last"
+                    )
+                }
+            }
+
+            var increment by remember { mutableStateOf("null") }
+            runBlocking {
+                increment = exampleSettings.getIncrement().toString()
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Datastore module, increment value = $increment",
+                    modifier = Modifier.weight(1f),
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Button(
+                    onClick = {
+                        runBlocking {
+                            val value = exampleSettings.getIncrement() + 1
+                            exampleSettings.setIncrement(value)
+                            increment = exampleSettings.getIncrement().toString()
+                        }
+                    }
+                ) {
+                    Text(
+                        text = "Increment"
                     )
                 }
             }

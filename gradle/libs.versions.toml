@@ -21,6 +21,7 @@ koin-bom = "4.0.4"
 
 room = "2.7.1"
 sqlite = "2.5.1"
+datastore = "1.1.7"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -34,7 +35,10 @@ androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayo
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
-kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
+
+kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
 koin-core = { module = "io.insert-koin:koin-core" }
@@ -56,6 +60,9 @@ sqlite-ktx = { group = "androidx.sqlite", name = "sqlite-ktx", version.ref = "sq
 sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version.ref = "sqlite" }
 sqlite-bundled-jvm = { group = "androidx.sqlite", name = "sqlite-bundled-jvm", version.ref = "sqlite" }
 sqlite-bundled-android = { group = "androidx.sqlite", name = "sqlite-bundled-android", version.ref = "sqlite" }
+
+datastore = { group = "androidx.datastore", name = "datastore", version.ref = "datastore" }
+datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

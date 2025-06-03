@@ -35,3 +35,4 @@ plugins {
 include(":composeApp")
 include(":logging")
 include(":roomdatabase")
+include(":datastore")

@@ -10,7 +10,7 @@ import platform.Foundation.NSFileManager
 import platform.Foundation.NSUserDomainMask
 
 internal fun getDatabaseBuilder(): RoomDatabase.Builder<MainDatabase> {
-    val dbFilePath = documentDirectory() + "/main.db" // TODO Change to a proper database name
+    val dbFilePath = documentDirectory() + "/${Config.DATABASE_NAME}"
     return Room.databaseBuilder<MainDatabase>(
         name = dbFilePath,
     )
@@ -23,6 +23,6 @@ private fun documentDirectory(): String {
         appropriateForURL = null,
         create = false,
         error = null,
-    )
+    ) // TODO Change directory
     return requireNotNull(documentDirectory?.path)
 }

@@ -6,7 +6,7 @@ import androidx.room.RoomDatabase
 
 internal fun getDatabaseBuilder(ctx: Context): RoomDatabase.Builder<MainDatabase> {
     val appContext = ctx.applicationContext
-    val dbFile = appContext.getDatabasePath("main.db") // TODO Change to a proper database name
+    val dbFile = appContext.getDatabasePath(Config.DATABASE_NAME)
     return Room.databaseBuilder<MainDatabase>(
         context = appContext,
         name = dbFile.absolutePath

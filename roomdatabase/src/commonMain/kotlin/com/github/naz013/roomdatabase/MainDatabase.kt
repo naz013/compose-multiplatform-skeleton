@@ -14,7 +14,7 @@ import kotlinx.coroutines.IO
     entities = [
         ExampleEntity::class // TODO Add your entities here
     ],
-    version = 1,
+    version = Config.VERSION,
     exportSchema = false
 )
 @ConstructedBy(AppDatabaseConstructor::class)
