@@ -1,0 +1,24 @@
+CREATE TABLE delight (
+  id INTEGER PRIMARY KEY NOT NULL,
+  name TEXT NOT NULL
+);
+
+CREATE INDEX delight_name ON delight(name);
+
+selectAll:
+SELECT *
+FROM delight;
+
+insert:
+INSERT INTO delight(name)
+VALUES (?);
+
+selectLast:
+SELECT *
+FROM delight
+ORDER BY id DESC LIMIT 1;
+
+selectFirst:
+SELECT *
+FROM delight
+ORDER BY id ASC LIMIT 1;
