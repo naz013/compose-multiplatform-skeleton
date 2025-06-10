@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.naz013.datastore.example.ExampleSettings
+import com.github.naz013.ktor.weather.CurrentWeatherApi
 import com.github.naz013.logging.Logger
 import com.github.naz013.roomdatabase.example.Example
 import com.github.naz013.roomdatabase.example.ExampleRepository
@@ -42,6 +43,7 @@ fun App(
     exampleRepository: ExampleRepository = getKoin().get(),
     exampleSettings: ExampleSettings = getKoin().get(),
     delightRepository: DelightRepository = getKoin().get(),
+    currentWeatherApi: CurrentWeatherApi = getKoin().get()
 ) {
     MaterialTheme {
         Box(
@@ -290,6 +292,32 @@ fun App(
                     ) {
                         Text(
                             text = "Read last"
+                        )
+                    }
+                }
+
+                var currentTemperature by remember { mutableStateOf("null") }
+
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Current temperature in Kyiv is $currentTemperature",
+                        modifier = Modifier.weight(1f),
+                        fontSize = 18.sp,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Button(
+                        onClick = {
+                            runBlocking {
+                                currentTemperature = currentWeatherApi.getTemperature() ?: "null"
+                            }
+                        }
+                    ) {
+                        Text(
+                            text = "Get temperature"
                         )
                     }
                 }

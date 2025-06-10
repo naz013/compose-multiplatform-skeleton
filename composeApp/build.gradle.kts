@@ -55,6 +55,7 @@ kotlin {
             implementation(project(":roomdatabase"))
             implementation(project(":datastore"))
             implementation(project(":sqldelightdatabase"))
+            implementation(project(":ktor"))
 
             // Optional dependencies
             implementation(project.dependencies.platform(libs.koin.bom))
