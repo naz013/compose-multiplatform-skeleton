@@ -16,7 +16,7 @@ Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-mu
 License
 -------
 
-    Copyright 2025 Nazar Suhovich
+    Copyright 2025 Nazar Sukhovych
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
