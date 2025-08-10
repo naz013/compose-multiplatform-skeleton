@@ -56,6 +56,8 @@ kotlin {
             implementation(project(":datastore"))
             implementation(project(":sqldelightdatabase"))
             implementation(project(":ktor"))
+            implementation(project(":datetime"))
+            implementation(project(":localization"))
 
             // Optional dependencies
             implementation(project.dependencies.platform(libs.koin.bom))

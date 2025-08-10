@@ -34,11 +34,11 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(project(":logging"))
+            implementation(project(":localization"))
 
             implementation(libs.kotlinx.coroutines.core)
 
             implementation(libs.datastore)
-            implementation(libs.datastore.preferences)
             implementation(libs.datastore.preferences)
 
             // Optional dependencies

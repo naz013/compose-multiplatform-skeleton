@@ -15,6 +15,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,6 +26,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.naz013.datastore.example.ExampleSettings
 import com.github.naz013.ktor.weather.CurrentWeatherApi
+import com.github.naz013.localization.LocalLocalizationManager
+import com.github.naz013.localization.LocalizationManager
+import com.github.naz013.localization.StringKeys
+import com.github.naz013.localization.localizedString
 import com.github.naz013.logging.Logger
 import com.github.naz013.roomdatabase.example.Example
 import com.github.naz013.roomdatabase.example.ExampleRepository
@@ -43,282 +48,289 @@ fun App(
     exampleRepository: ExampleRepository = getKoin().get(),
     exampleSettings: ExampleSettings = getKoin().get(),
     delightRepository: DelightRepository = getKoin().get(),
-    currentWeatherApi: CurrentWeatherApi = getKoin().get()
+    currentWeatherApi: CurrentWeatherApi = getKoin().get(),
+    localizationManager: LocalizationManager = getKoin().get()
 ) {
-    MaterialTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .safeContentPadding()
-                .padding(16.dp)
-        ) {
-            Column(
+    CompositionLocalProvider(
+        LocalLocalizationManager provides localizationManager,
+    ) {
+        MaterialTheme {
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState()),
+                    .fillMaxSize()
+                    .safeContentPadding()
+                    .padding(16.dp)
             ) {
-                Text(
-                    text = "Compose Multiplatform Skeleton",
-                    modifier = Modifier.fillMaxWidth(),
-                    fontSize = 24.sp,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "Modules testing",
-                    modifier = Modifier.fillMaxWidth(),
-                    fontSize = 22.sp,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState()),
                 ) {
                     Text(
-                        text = "Logging module",
-                        modifier = Modifier.weight(1f),
+                        text = localizedString(StringKeys.AppTitle),
+                        modifier = Modifier.fillMaxWidth(),
+                        fontSize = 24.sp,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Modules testing",
+                        modifier = Modifier.fillMaxWidth(),
+                        fontSize = 22.sp,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Logging module",
+                            modifier = Modifier.weight(1f),
+                            fontSize = 18.sp,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                        Button(
+                            onClick = {
+                                Logger.i("App", "Logging module is working!")
+                            }
+                        ) {
+                            Text(
+                                text = "Print log"
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Room database testing",
+                        modifier = Modifier.fillMaxWidth(),
                         fontSize = 18.sp,
                         color = MaterialTheme.colorScheme.onBackground
                     )
-                    Button(
-                        onClick = {
-                            Logger.i("App", "Logging module is working!")
-                        }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Print log"
+                            text = "Add new entity",
+                            modifier = Modifier.weight(1f),
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
-                    }
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Room database testing",
-                    modifier = Modifier.fillMaxWidth(),
-                    fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Add new entity",
-                        modifier = Modifier.weight(1f),
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    Button(
-                        onClick = {
-                            runBlocking {
-                                val example = Example(name = Uuid.random().toHexString())
-                                exampleRepository.insert(example)
-                                Logger.i("App", "Entity added: ${example.name}")
+                        Button(
+                            onClick = {
+                                runBlocking {
+                                    val example = Example(name = Uuid.random().toHexString())
+                                    exampleRepository.insert(example)
+                                    Logger.i("App", "Entity added: ${example.name}")
+                                }
                             }
+                        ) {
+                            Text(
+                                text = "Write to DB"
+                            )
                         }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    var firstEntity by remember { mutableStateOf("null") }
+                    var lastEntity by remember { mutableStateOf("null") }
+
+                    runBlocking {
+                        firstEntity = exampleRepository.getFirst()?.name ?: "null"
+                        lastEntity = exampleRepository.getLast()?.name ?: "null"
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Write to DB"
+                            text = "First entity name: $firstEntity",
+                            modifier = Modifier.weight(1f),
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
-                    }
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                var firstEntity by remember { mutableStateOf("null") }
-                var lastEntity by remember { mutableStateOf("null") }
-
-                runBlocking {
-                    firstEntity = exampleRepository.getFirst()?.name ?: "null"
-                    lastEntity = exampleRepository.getLast()?.name ?: "null"
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "First entity name: $firstEntity",
-                        modifier = Modifier.weight(1f),
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    Button(
-                        onClick = {
-                            runBlocking {
-                                firstEntity = exampleRepository.getFirst()?.name ?: "null"
+                        Button(
+                            onClick = {
+                                runBlocking {
+                                    firstEntity = exampleRepository.getFirst()?.name ?: "null"
+                                }
                             }
+                        ) {
+                            Text(
+                                text = "Read first"
+                            )
                         }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Read first"
+                            text = "Last entity name: $lastEntity",
+                            modifier = Modifier.weight(1f),
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
-                    }
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Last entity name: $lastEntity",
-                        modifier = Modifier.weight(1f),
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    Button(
-                        onClick = {
-                            runBlocking {
-                                lastEntity = exampleRepository.getLast()?.name ?: "null"
+                        Button(
+                            onClick = {
+                                runBlocking {
+                                    lastEntity = exampleRepository.getLast()?.name ?: "null"
+                                }
                             }
+                        ) {
+                            Text(
+                                text = "Read last"
+                            )
                         }
+                    }
+
+                    var increment by remember { mutableStateOf("null") }
+                    runBlocking {
+                        increment = exampleSettings.getIncrement().toString()
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Read last"
+                            text = "Datastore module, increment value = $increment",
+                            modifier = Modifier.weight(1f),
+                            fontSize = 18.sp,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
+                        Button(
+                            onClick = {
+                                runBlocking {
+                                    val value = exampleSettings.getIncrement() + 1
+                                    exampleSettings.setIncrement(value)
+                                    increment = exampleSettings.getIncrement().toString()
+                                }
+                            }
+                        ) {
+                            Text(
+                                text = "Increment"
+                            )
+                        }
                     }
-                }
 
-                var increment by remember { mutableStateOf("null") }
-                runBlocking {
-                    increment = exampleSettings.getIncrement().toString()
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                    Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Datastore module, increment value = $increment",
-                        modifier = Modifier.weight(1f),
+                        text = "SqlDelight testing",
+                        modifier = Modifier.fillMaxWidth(),
                         fontSize = 18.sp,
                         color = MaterialTheme.colorScheme.onBackground
                     )
-                    Button(
-                        onClick = {
-                            runBlocking {
-                                val value = exampleSettings.getIncrement() + 1
-                                exampleSettings.setIncrement(value)
-                                increment = exampleSettings.getIncrement().toString()
-                            }
-                        }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Increment"
+                            text = "Add new entity",
+                            modifier = Modifier.weight(1f),
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
+                        Button(
+                            onClick = {
+                                runBlocking {
+                                    val model = DelightModel(name = Uuid.random().toHexString())
+                                    delightRepository.insert(model)
+                                    Logger.i("App", "SqlDelight inserted: ${model.name}")
+                                }
+                            }
+                        ) {
+                            Text(
+                                text = "Write to DB"
+                            )
+                        }
                     }
-                }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    var firstDelightEntity by remember { mutableStateOf("null") }
+                    var lastDelightEntity by remember { mutableStateOf("null") }
 
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "SqlDelight testing",
-                    modifier = Modifier.fillMaxWidth(),
-                    fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Add new entity",
-                        modifier = Modifier.weight(1f),
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    Button(
-                        onClick = {
-                            runBlocking {
-                                val model = DelightModel(name = Uuid.random().toHexString())
-                                delightRepository.insert(model)
-                                Logger.i("App", "SqlDelight inserted: ${model.name}")
-                            }
-                        }
-                    ) {
-                        Text(
-                            text = "Write to DB"
-                        )
+                    runBlocking {
+                        firstDelightEntity = delightRepository.getFirst()?.name ?: "null"
+                        lastDelightEntity = delightRepository.getLast()?.name ?: "null"
                     }
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                var firstDelightEntity by remember { mutableStateOf("null") }
-                var lastDelightEntity by remember { mutableStateOf("null") }
 
-                runBlocking {
-                    firstDelightEntity = delightRepository.getFirst()?.name ?: "null"
-                    lastDelightEntity = delightRepository.getLast()?.name ?: "null"
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "First entity name: $firstDelightEntity",
-                        modifier = Modifier.weight(1f),
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    Button(
-                        onClick = {
-                            runBlocking {
-                                firstDelightEntity = delightRepository.getFirst()?.name ?: "null"
-                            }
-                        }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Read first"
+                            text = "First entity name: $firstDelightEntity",
+                            modifier = Modifier.weight(1f),
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
+                        Button(
+                            onClick = {
+                                runBlocking {
+                                    firstDelightEntity =
+                                        delightRepository.getFirst()?.name ?: "null"
+                                }
+                            }
+                        ) {
+                            Text(
+                                text = "Read first"
+                            )
+                        }
                     }
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Last entity name: $lastDelightEntity",
-                        modifier = Modifier.weight(1f),
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    Button(
-                        onClick = {
-                            runBlocking {
-                                lastDelightEntity = delightRepository.getLast()?.name ?: "null"
-                            }
-                        }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Read last"
+                            text = "Last entity name: $lastDelightEntity",
+                            modifier = Modifier.weight(1f),
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
+                        Button(
+                            onClick = {
+                                runBlocking {
+                                    lastDelightEntity = delightRepository.getLast()?.name ?: "null"
+                                }
+                            }
+                        ) {
+                            Text(
+                                text = "Read last"
+                            )
+                        }
                     }
-                }
 
-                var currentTemperature by remember { mutableStateOf("null") }
+                    var currentTemperature by remember { mutableStateOf("null") }
 
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Current temperature in Kyiv is $currentTemperature",
-                        modifier = Modifier.weight(1f),
-                        fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    Button(
-                        onClick = {
-                            runBlocking {
-                                currentTemperature = currentWeatherApi.getTemperature() ?: "null"
-                            }
-                        }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Get temperature"
+                            text = "Current temperature in Kyiv is $currentTemperature",
+                            modifier = Modifier.weight(1f),
+                            fontSize = 18.sp,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
+                        Button(
+                            onClick = {
+                                runBlocking {
+                                    currentTemperature =
+                                        currentWeatherApi.getTemperature() ?: "null"
+                                }
+                            }
+                        ) {
+                            Text(
+                                text = "Get temperature"
+                            )
+                        }
                     }
                 }
             }
