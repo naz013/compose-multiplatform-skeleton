@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.androidKmpLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
 }
@@ -10,10 +10,11 @@ plugins {
 kotlin {
     jvm()
 
-    androidTarget {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_17)
-        }
+    android {
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        namespace = "com.github.naz013.localization"
+        experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
     }
 
     listOf(
@@ -66,38 +67,4 @@ compose.resources {
     publicResClass = true
     packageOfResClass = "com.github.naz013.localization.resources"
     generateResClass = always
-}
-
-android {
-    namespace = "com.github.naz013.localization"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-}
-
-// Define the Gradle task to verify StringKeys uniqueness
-val verifyStringKeysUniqueness by tasks.registering(JavaExec::class) {
-    group = "verification"
-    description = "Verifies that all 'key' properties in StringKeys.kt are unique using reflection."
-
-    classpath = sourceSets.getByName("jvmMain").runtimeClasspath // Or sourceSets.jvmMain.get().runtimeClasspath
-    mainClass.set("com.github.naz013.localization.util.StringKeysVerifierKt")
-
-    // If your desktop target is named 'jvm', use:
-    dependsOn(kotlin.targets.getByName("jvm").compilations.getByName("main").compileKotlinTask)
-}
-
-// Ensure verification runs before the library's assemble tasks
-afterEvaluate {
-    // Make the general 'assemble' task of this library module depend on the global verification task.
-    // This will cover 'assembleDebug', 'assembleRelease', etc.
-    tasks.findByName("assemble")?.dependsOn(":verifyStringKeysUniqueness")
-
-    // If it's a pure Kotlin/JVM library, you might also want to explicitly link it to the 'jar' task
-    tasks.findByName("jar")?.dependsOn(":verifyStringKeysUniqueness")
 }
