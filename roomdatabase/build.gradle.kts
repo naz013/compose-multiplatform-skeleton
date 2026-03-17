@@ -56,7 +56,10 @@ kotlin {
     }
 }
 
-//dependencies {
-//    implementation(libs.room.common.jvm)
-//    ksp(libs.room.compiler)
-//}
+dependencies {
+    add("kspJvm", libs.room.compiler)
+    add("kspAndroid", libs.room.compiler)
+    add("kspIosSimulatorArm64", libs.room.compiler)
+    add("kspIosX64", libs.room.compiler)
+    add("kspIosArm64", libs.room.compiler)
+}
